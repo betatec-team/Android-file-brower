@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.StyleRes;
 
 
-import com.wangy.new_lfilepicker.R;
+import com.leon.lfilepickerlibrary.new_lfilepicker.R;
 import com.leon.lfilepickerlibrary.model.ParamEntity;
 import com.leon.lfilepickerlibrary.ui.LFilePickerActivity;
 

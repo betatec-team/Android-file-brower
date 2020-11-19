@@ -124,7 +124,7 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
             android:layout_marginLeft="@dimen/dp_20"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            tools:text="11111111111111111" />
+          />
 
         <TextView
             android:id="@+id/tv_life_cancel"
@@ -134,7 +134,7 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/dp_20"
             android:paddingRight="@dimen/dp_20"
-            android:text="取消"
+            android:text="@string/cancel"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
@@ -147,7 +147,7 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
             android:layout_marginRight="32dp"
             android:paddingLeft="@dimen/dp_20"
             android:paddingRight="@dimen/dp_20"
-            android:text="粘贴"
+            android:text="@string/paste"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 

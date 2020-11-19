@@ -1,7 +1,7 @@
 package com.leon.lfilepickerlibrary.ui;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -23,6 +23,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -30,13 +32,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.wangy.new_lfilepicker.R;
 import com.leon.lfilepickerlibrary.adapter.PathAdapter;
 import com.leon.lfilepickerlibrary.filter.LFileFilter;
 import com.leon.lfilepickerlibrary.model.ParamEntity;
+import com.leon.lfilepickerlibrary.new_lfilepicker.R;
 import com.leon.lfilepickerlibrary.utils.AlertDialogUtils;
 import com.leon.lfilepickerlibrary.utils.Constant;
 import com.leon.lfilepickerlibrary.utils.FileUtils;
+import com.leon.lfilepickerlibrary.utils.NavigationBarUtil;
 import com.leon.lfilepickerlibrary.utils.StringUtils;
 import com.leon.lfilepickerlibrary.widget.EmptyRecyclerView;
 
@@ -61,7 +64,8 @@ public class LFilePickerActivity extends AppCompatActivity {
     public ParamEntity mParamEntity;
     private LFileFilter mFilter;
     public boolean mIsAllSelected = false;
-    private boolean mClearData = true;
+    private boolean mClearData = true, open_dir = false;
+    ;
     private Menu mMenu;
     private PopupWindow pw;
     private String defultBackPath;
@@ -75,6 +79,18 @@ public class LFilePickerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mParamEntity = (ParamEntity) Objects.requireNonNull(getIntent().getExtras()).getSerializable("param");
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        ActionBar actionbar = getSupportActionBar();
+//        if (actionbar != null) {
+//            actionbar.hide();
+//        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (NavigationBarUtil.mt8735GetNavigationBarState(this)) {
+            NavigationBarUtil.showNavigationBar(getWindow());
+        } else {
+            NavigationBarUtil.hideNavigationBar(getWindow());
+        }
         assert mParamEntity != null;
         setTheme(mParamEntity.getTheme());
         super.onCreate(savedInstanceState);
@@ -146,22 +162,22 @@ public class LFilePickerActivity extends AppCompatActivity {
                 String path = mParamEntity.getPath();
                 if (parent.equals(path)) {
                     // 加载当前的路径
-                    mPath = "/"+path;
+                    mPath = "/" + path;
                 } else {
-                    mPath = "/"+parent;
+                    mPath = "/" + parent;
                 }
             } else {
-                mPath = "/"+mParamEntity.getPath();
+                mPath = "/" + mParamEntity.getPath();
                 if (StringUtils.isEmpty(mPath)) {
                     //如果没有指定路径，则使用默认路径
-                    mPath = "/"+Environment.getExternalStorageDirectory().getAbsolutePath();
+                    mPath = "/" + Environment.getExternalStorageDirectory().getAbsolutePath();
                 }
             }
         } else {
-            mPath = "/"+mParamEntity.getPath();
+            mPath = "/" + mParamEntity.getPath();
             if (StringUtils.isEmpty(mPath)) {
                 //如果没有指定路径，则使用默认路径
-                mPath = "/"+Environment.getExternalStorageDirectory().getAbsolutePath();
+                mPath = "/" + Environment.getExternalStorageDirectory().getAbsolutePath();
             }
         }
 
@@ -199,6 +215,8 @@ public class LFilePickerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(v ->
                 finish()
+
+
         );
     }
 
@@ -218,6 +236,7 @@ public class LFilePickerActivity extends AppCompatActivity {
     /**
      * 添加点击事件处理
      */
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @SuppressLint("SetTextI18n")
     private void initListener() {
@@ -243,6 +262,9 @@ public class LFilePickerActivity extends AppCompatActivity {
                     mIsAllSelected = false;
                     updateMenuTitle();
                     mBtnAddBook.setText(getString(R.string.lfile_Selected));
+                    if (!open_dir) {
+                        open_dir = true;
+                    }
 //                    closeCopy();
 //              todo
 //                    if (falage)
@@ -282,6 +304,9 @@ public class LFilePickerActivity extends AppCompatActivity {
                     mIsAllSelected = false;
                     updateMenuTitle();
                     mBtnAddBook.setText(getString(R.string.lfile_Selected));
+                    if (!open_dir) {
+                        open_dir = true;
+                    }
 //                    closeCopy();
 //                todo
 //                    if (falage)
@@ -319,6 +344,9 @@ public class LFilePickerActivity extends AppCompatActivity {
                 if (mListFiles.get(position).isDirectory()) {
                     clearData();
                     chekInDirectory(position);
+                    if (!open_dir) {
+                        open_dir = true;
+                    }
                     return;
                 }
                 if (mParamEntity.isChooseMode()) {
@@ -465,27 +493,41 @@ public class LFilePickerActivity extends AppCompatActivity {
         }
         Intent intent = new Intent();
         if (mParamEntity.isChooseMode()) {
-            for (int i = 0; i < mListNumbers.size(); i++) {
-                String path = mListNumbers.get(i);
-                String parent = new File(path).getParent();
-                if (!parent.equals(mTvPath.getText())) {
-                    mListNumbers.remove(i);
-                }
+            if (open_dir) {
+                for (int i = 0; i < mListNumbers.size(); i++) {
+                    String path = mListNumbers.get(i);
+                    String parent = new File(path).getParent();
+                    if (!parent.equals(mTvPath.getText())) {
+                        mListNumbers.remove(i);
+                    }
 
+                }
+                intent.putExtra("path", mTvPath.getText().toString().trim());
+            } else {
+                if (mListNumbers != null && mListNumbers.size() > 0) {
+                    intent.putExtra("path", new File(mListNumbers.get(0)).getParent());
+                }
             }
             intent.putStringArrayListExtra("paths", mListNumbers);
         } else {
-            for (int i = 0; i < mListBoxNumbers.size(); i++) {
-                String path = mListBoxNumbers.get(i);
-                String parent = new File(path).getParent();
-                if (!parent.equals(mTvPath.getText())) {
-                    mListBoxNumbers.remove(i);
+            if (open_dir) {
+                for (int i = 0; i < mListBoxNumbers.size(); i++) {
+                    String path = mListBoxNumbers.get(i);
+                    String parent = new File(path).getParent();
+                    assert parent != null;
+                    if (!parent.equals(mTvPath.getText())) {
+                        mListBoxNumbers.remove(i);
+                    }
                 }
-
+                intent.putExtra("path", mTvPath.getText().toString().trim());
+            } else {
+                if (mListBoxNumbers != null && mListBoxNumbers.size() > 0) {
+                    intent.putExtra("path", new File(mListBoxNumbers.get(0)).getParent());
+                }
             }
             intent.putStringArrayListExtra("paths", mListBoxNumbers);
         }
-        intent.putExtra("path", mTvPath.getText().toString().trim());
+
         setResult(RESULT_OK, intent);
         this.finish();
     }
@@ -596,7 +638,6 @@ public class LFilePickerActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.action_selecte_del) {
             closeCopy();
             delFile();
-
         } else if (item.getItemId() == R.id.action_selecte_copy) {
             copyOrMoveFile(0);
         } else if (item.getItemId() == R.id.action_selecte_move) {
@@ -624,20 +665,41 @@ public class LFilePickerActivity extends AppCompatActivity {
     private void copyOrMoveFile(int mode) {
         Resources rescouse = getRes();
         getBoxData();
+        removeCopyData();
         if (mListNumbers != null | mListBoxNumbers != null) {
+            if (mListNumbers == null) {
+                if (mListBoxNumbers.size() <= 0) {
+                    showZeroToast(rescouse);
+                    return;
+                }
+            } else if (mListBoxNumbers == null) {
+                if (mListNumbers.size() <= 0) {
+                    showZeroToast(rescouse);
+                    return;
+                }
+            } else {
+                if (mListNumbers.size() <= 0 && mListBoxNumbers.size() <= 0) {
+                    showZeroToast(rescouse);
+                    return;
+                }
+            }
             mClearData = false;
             copyOrMoveDialog(mode);
         } else {
             // 提示
+            showZeroToast(rescouse);
 
-            String youCheck = rescouse.getString(R.string.you_check);
-            String youCheckEnd = rescouse.getString(R.string.you_check_end);
-            Toast.makeText(LFilePickerActivity.this, youCheck + (mListNumbers == null ? 0 : mListNumbers.size()) + youCheckEnd, Toast.LENGTH_SHORT).show();
         }
     }
 
-    ArrayList<String> mNewListBoxNumbers;
-    ArrayList<String> mNewListNumbers;
+    private void showZeroToast(Resources rescouse) {
+        String youCheck = rescouse.getString(R.string.you_check);
+        String youCheckEnd = rescouse.getString(R.string.you_check_end);
+        Toast.makeText(LFilePickerActivity.this, youCheck + (mListNumbers == null ? 0 : mListNumbers.size()) + youCheckEnd, Toast.LENGTH_SHORT).show();
+    }
+
+//    ArrayList<String> mNewListBoxNumbers;
+//    ArrayList<String> mNewListNumbers;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @SuppressLint("SetTextI18n")
@@ -645,8 +707,8 @@ public class LFilePickerActivity extends AppCompatActivity {
         Resources rescouse = getRes();
         clearLastFileData(mListBoxNumbers);
         clearLastFileData(mListNumbers);
-        mNewListBoxNumbers = mListBoxNumbers;
-        mNewListNumbers = mListNumbers;
+//        mNewListBoxNumbers = mListBoxNumbers;
+//        mNewListNumbers = mListNumbers;
         String copy = rescouse.getString(R.string.copy);
         String cancel = rescouse.getString(R.string.cancel);
         String move = rescouse.getString(R.string.move);
@@ -664,8 +726,8 @@ public class LFilePickerActivity extends AppCompatActivity {
 //        dialog.show();
         mBtnAddBook.setVisibility(View.GONE);
         rlCopy.setVisibility(View.VISIBLE);
-        tvTags.setText((mode == 0 ? copy : move) + "：" + mNewListBoxNumbers.size() + rescouse.getString(R.string.file_box_num)
-                + "，" + mNewListNumbers.size() + rescouse.getString(R.string.file_num));
+        tvTags.setText((mode == 0 ? copy : move) + "：" + mListBoxNumbers.size() + rescouse.getString(R.string.file_box_num)
+                + "，" + mListNumbers.size() + rescouse.getString(R.string.file_num));
         tvCancel.setText(cancel);
         tvCopy.setText(copy);
         tvCancel.setOnClickListener((v) -> {
@@ -674,9 +736,9 @@ public class LFilePickerActivity extends AppCompatActivity {
             closeCopy();
         });
         tvCopy.setOnClickListener((v) -> {
-            if (mNewListNumbers != null) {
+            if (mListNumbers != null | mListBoxNumbers != null) {
                 //1.判断复制的文件是否是当前的路径
-                for (String path : mNewListNumbers) {
+                for (String path : mListNumbers) {
                     if (mPath.equals(new File(path).getAbsolutePath())) {
                         Toast.makeText(LFilePickerActivity.this, rescouse.getString(R.string.donot_worry), Toast.LENGTH_LONG).show();
                         return;
@@ -684,7 +746,7 @@ public class LFilePickerActivity extends AppCompatActivity {
 
                 }
                 // 将文件/文件夹 复制到当前的位置
-                for (String path : mNewListNumbers) {
+                for (String path : mListNumbers) {
                     try {
                         File file = new File(path);
                         FileUtils.copyFile(file, new File(mPath, file.getName()));
@@ -693,7 +755,7 @@ public class LFilePickerActivity extends AppCompatActivity {
                     }
                 }
                 // 将文件夹复制到当前的位置
-                for (String path : mNewListBoxNumbers) {
+                for (String path : mListBoxNumbers) {
                     try {
                         FileUtils.copyFolder(this, path, new File(mPath).getPath(), mParamEntity.getLocacalLanguage());
                     } catch (Exception e) {
@@ -701,14 +763,14 @@ public class LFilePickerActivity extends AppCompatActivity {
                     }
                 }
                 if (mode == 1) {
-                    for (String path : mNewListNumbers) {
+                    for (String path : mListNumbers) {
                         try {
                             FileUtils.deleteDir(path);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    for (String path : mNewListBoxNumbers) {
+                    for (String path : mListBoxNumbers) {
                         try {
                             FileUtils.deleteDir(path);
                         } catch (Exception e) {
@@ -794,12 +856,25 @@ public class LFilePickerActivity extends AppCompatActivity {
     private void delFile() {
         Resources rescouse = getRes();
         getBoxData();
+        removeCopyData();
         if (mListNumbers.size() > 0 | mListBoxNumbers.size() > 0) {
             //todo 关闭
 //            clearDataAll();
             clearLastFileData(mListBoxNumbers);
             clearLastFileData(mListNumbers);
-            AlertDialogUtils.showDialog(this, null, rescouse.getString(R.string.delete_all), null, (dialog, which) -> {
+            final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar) {
+                @Override
+                protected void onStart() {
+                    super.onStart();
+                    NavigationBarUtil.hideNavigationBar(getWindow());
+                }
+            };
+            View view = LayoutInflater.from(this).inflate(R.layout.iteam_del, null);
+            Button btnCancel = view.findViewById(R.id.btn_cancel);
+            Button btnOk = view.findViewById(R.id.btn_create);
+            dialog.setContentView(view);
+            dialog.show();
+            btnOk.setOnClickListener((v)->{
                 // 删除文件夹
                 if (mListBoxNumbers != null) {
                     for (String path : mListBoxNumbers) {
@@ -823,6 +898,10 @@ public class LFilePickerActivity extends AppCompatActivity {
                 } else {
                     mBtnAddBook.setText(getString(R.string.lfile_Selected) + "( 0 )");
                 }
+                dialog.dismiss();
+            });
+            btnCancel.setOnClickListener((v)->{
+                NavigationBarUtil.hideNavigationBar(getWindow());
                 dialog.dismiss();
             });
         } else {
@@ -858,6 +937,9 @@ public class LFilePickerActivity extends AppCompatActivity {
 //        }
 //        updateMenuTitle();
 
+//            mListNumbers.remove()
+//            mListBoxNumbers
+        removeCopyData();
         if (mListNumbers != null && mListNumbers.size() == 1 && (mListBoxNumbers == null | mListBoxNumbers.size() <= 0)) {
             File file = new File(mListNumbers.get(0));
             retNameAlertDialog(file.getName(), file.getParent());
@@ -876,6 +958,28 @@ public class LFilePickerActivity extends AppCompatActivity {
         }
     }
 
+    private void removeCopyData() {
+        if (mListNumbers != null) {
+            if (mListNumbers.size() > 0) {
+                for (int i = 0; i < mListNumbers.size(); i++) {
+                    if (!mTvPath.getText().toString().trim().equals(new File(mListNumbers.get(i)).getParent())) {
+                        mListNumbers.remove(i);
+                    }
+
+                }
+            }
+        } else if (mListBoxNumbers != null) {
+            if (mListBoxNumbers.size() > 0) {
+                for (int i = 0; i < mListBoxNumbers.size(); i++) {
+                    if (!mTvPath.getText().toString().trim().equals(new File(mListBoxNumbers.get(i)).getParent())) {
+                        mListBoxNumbers.remove(i);
+                    }
+
+                }
+            }
+        }
+    }
+
     /**
      * 重命名的提示框
      *
@@ -887,10 +991,23 @@ public class LFilePickerActivity extends AppCompatActivity {
     private void retNameAlertDialog(final String texts, final String path) {
         @SuppressLint("InflateParams")
         Resources rescouse = getRes();
+        final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar) {
+            @Override
+            protected void onStart() {
+                super.onStart();
+                NavigationBarUtil.hideNavigationBar(getWindow());
+            }
+        };
         View view = LayoutInflater.from(this).inflate(R.layout.itaam_rename, null);
-        final EditText etReName = view.findViewById(R.id.et_iteam_rename);
+        EditText etReName = view.findViewById(R.id.et_iteam_rename);
+        TextView tvTitle = view.findViewById(R.id.tv_rename_title);
+        Button btnCancel = view.findViewById(R.id.btn_cancel);
+        Button btnOk = view.findViewById(R.id.btn_create);
+        dialog.setContentView(view);
+        dialog.show();
+        tvTitle.setText(rescouse.getString(R.string.re_name));
         etReName.setText(texts);
-        AlertDialogUtils.showDialog(this, null, null, view, (dialog, which) -> {
+        btnOk.setOnClickListener((v) -> {
             String reName = etReName.getText().toString().trim();
             if (texts.equals(reName)) {
                 Log.d("Tag", rescouse
@@ -914,7 +1031,10 @@ public class LFilePickerActivity extends AppCompatActivity {
                 dialog.dismiss();
 
             }
-
+        });
+        btnCancel.setOnClickListener((v) ->{
+            dialog.dismiss();
+            NavigationBarUtil.hideNavigationBar(getWindow());
         });
     }
 
@@ -939,10 +1059,26 @@ public class LFilePickerActivity extends AppCompatActivity {
             // 点击外部可以消失
             pw.setOutsideTouchable(true);
             pw.setFocusable(true);
+            pw.setOnDismissListener(() -> {
+                // 隐藏底部
+                if (NavigationBarUtil.mt8735GetNavigationBarState(LFilePickerActivity.this)) {
+                    NavigationBarUtil.showNavigationBar(getWindow());
+                } else {
+                    NavigationBarUtil.hideNavigationBar(getWindow());
+                }
+            });
+            pw.setClippingEnabled(false);
+//            pw.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             // 点击外部不可以消失
 //            pw.setTouchable(true);
-            pw.showAtLocation(LayoutInflater.from(LFilePickerActivity.this).inflate(R.layout.activity_lfile_picker, null, false), Gravity.RIGHT, 0, -125);
-//            mPathAdapter.
+            View parentView = LayoutInflater.from(LFilePickerActivity.this).inflate(R.layout.activity_lfile_picker, null, false);
+            pw.showAtLocation(parentView, Gravity.RIGHT, 0, -125);
+
+            //            if (NavigationBarUtil.mt8735GetNavigationBarState(LFilePickerActivity.this)) {
+//                NavigationBarUtil.showNavigationBar(getWindow());
+//            } else {
+//                NavigationBarUtil.hideNavigationBar(getWindow());
+//            }
             // 去除所有的选中
             //todo
 //            mListNumbers.clear();
@@ -967,28 +1103,41 @@ public class LFilePickerActivity extends AppCompatActivity {
         Resources rescouse = getRes();
         if (pw != null && pw.isShowing()) pw.dismiss();
         final int types = type.equals("file") ? 1 : 2;
-        AlertDialog.Builder dialog = new AlertDialog.Builder(LFilePickerActivity.this);
-        dialog.setTitle(rescouse.getString(R.string.tips));
-        View view = LayoutInflater.from(this).inflate(R.layout.iteam_create_file_filebox, null);
-        dialog.setView(view);
-        EditText etCreate = view.findViewById(R.id.et_iteam_create);
-        etCreate.setHint(types == 1 ? rescouse.getString(R.string.create_file) : rescouse.getString(R.string.create_file));
-        dialog.setCancelable(false);
-        dialog.setNegativeButton(rescouse.getString(R.string.cancel), (dialog12, which) -> dialog12.dismiss());
-        dialog.setPositiveButton(rescouse.getString(R.string.lfile_OK), (dialog1, which) -> {
+
+        final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar) {
+            @Override
+            protected void onStart() {
+                super.onStart();
+                NavigationBarUtil.hideNavigationBar(getWindow());
+            }
+        };
+        View view = LayoutInflater.from(this).inflate(R.layout.itaam_rename, null);
+        EditText etReName = view.findViewById(R.id.et_iteam_rename);
+        TextView tvTitle = view.findViewById(R.id.tv_rename_title);
+        Button btnCancel = view.findViewById(R.id.btn_cancel);
+        Button btnOk = view.findViewById(R.id.btn_create);
+        dialog.setContentView(view);
+        dialog.show();
+        tvTitle.setText(types == 1 ? rescouse.getString(R.string.create_file) : rescouse.getString(R.string.create_file));
+        etReName.setHint(types == 1 ? rescouse.getString(R.string.create_file) : rescouse.getString(R.string.create_file));
+        btnOk.setOnClickListener((v) -> {
             // 创建文件/ 文件夹的方法
-            String fileOrBoxName = etCreate.getText().toString().trim();
+            String fileOrBoxName = etReName.getText().toString().trim();
             if (fileOrBoxName.isEmpty()) {
                 Toast.makeText(LFilePickerActivity.this, rescouse.getString(R.string.inout_str), Toast.LENGTH_LONG).show();
             } else {
-                dialog1.dismiss();
+                dialog.dismiss();
                 FileUtils.createFile(this, mPath, fileOrBoxName, types, mParamEntity.getLocacalLanguage());
                 //todo  清空选中
 
                 notityUI();
             }
         });
-        dialog.show();
+        btnCancel.setOnClickListener((v) ->{
+            dialog.dismiss();
+            NavigationBarUtil.hideNavigationBar(getWindow());
+        });
+
     }
 
 

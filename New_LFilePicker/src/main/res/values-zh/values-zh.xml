@@ -38,4 +38,9 @@
     <string name="create_fails">文件创建失败！</string>
     <string name="create_box_exit">您要创建的文件夹已经存在！</string>
     <string name="copy_current">请不要将同名称的文件放置到该目录下！</string>
+    <string name="create_files">创建文件</string>
+    <string name="create_filebox">创建文件夹</string>
+    <string name="paste">粘贴</string>
+    <string name="no_data">暂无数据</string>
+    <string name="re_name">重命名</string>
 </resources>

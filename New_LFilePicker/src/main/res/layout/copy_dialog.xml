@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_copy"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp">
 
-
+<!--
+        tools:text="复制：0个文件夹，0个文件"
+-->
     <TextView
         android:id="@+id/tv_copy_num"
         android:layout_width="wrap_content"
@@ -12,7 +15,6 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/dp_20"
-        android:text="复制：0个文件夹，0个文件"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 
@@ -25,7 +27,7 @@
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="取消"
+        tools:text="@string/cancel"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 
@@ -37,6 +39,6 @@
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="粘贴" />
+        tools:text="@string/paste" />
 
 </RelativeLayout>

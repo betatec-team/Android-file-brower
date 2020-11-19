@@ -9,10 +9,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
+import com.leon.lfilepickerlibrary.LFilePicker
+import com.leon.lfilepickerlibrary.utils.NavigationBarUtil
 import com.wangy.myapplication.adapater.CustomAdapater
 import com.wangy.myapplication.adapater.viewhodel.CustomViewHodel
 import com.wangy.myapplication.databinding.ActivityMainBinding
-import com.leon.lfilepickerlibrary.LFilePicker
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         initPro()
         initView()
         initListenter()
-
+        NavigationBarUtil.hideNavigationBar(window)
 
     }
 
@@ -77,8 +78,10 @@ class MainActivity : AppCompatActivity() {
                 //                // 过滤指定文件的大侠
                 //            .withFileSize(500 * 1024.toLong())
                 .start()
+
         }
     }
+
 
     /**
      * 给应用授权的方法

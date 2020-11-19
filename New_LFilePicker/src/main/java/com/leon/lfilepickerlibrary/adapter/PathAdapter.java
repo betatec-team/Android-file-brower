@@ -9,9 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
-
-import com.wangy.new_lfilepicker.R;
+import com.leon.lfilepickerlibrary.new_lfilepicker.R;
 import com.leon.lfilepickerlibrary.ui.LFilePickerActivity;
 import com.leon.lfilepickerlibrary.utils.Constant;
 import com.leon.lfilepickerlibrary.utils.FileUtils;
