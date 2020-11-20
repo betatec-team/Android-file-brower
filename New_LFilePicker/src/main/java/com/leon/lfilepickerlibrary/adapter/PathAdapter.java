@@ -48,7 +48,9 @@ public class PathAdapter extends RecyclerView.Adapter<PathAdapter.PathViewHolder
     public LinkedList<Integer> fileBoxList = new LinkedList();
     public ArrayList<String> mListNumbers = new ArrayList<String>();//存放选中文件条目的数据地址
 
-    public PathAdapter(List<File> mListData, LFilePickerActivity activity, FileFilter mFileFilter, boolean mMutilyMode, boolean mMutilyBoxMode, boolean mIsGreater, long mFileSize) {
+    public PathAdapter(List<File> mListData, LFilePickerActivity activity,
+                       FileFilter mFileFilter, boolean mMutilyMode, boolean mMutilyBoxMode,
+                       boolean mIsGreater, long mFileSize) {
         this.mListData = mListData;
         this.activity = activity;
         this.mFileFilter = mFileFilter;

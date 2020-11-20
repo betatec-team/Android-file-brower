@@ -102,30 +102,30 @@ class MainActivity : AppCompatActivity() {
                             denied: List<String?>
                         ) {
                             //用户选择了禁止不再询问
-                            com.leon.lfilepickerlibrary.utils.AlertDialogUtils.showDialog(
-                                this@MainActivity,
-                                "提示",
-                                "请给您的应用授予权限，否则无法执行之后的操作！！！",
-                                null,
-                                DialogInterface.OnClickListener { _, _ -> // 重新请求
-                                    PermissionUtils.permission(PermissionConstants.STORAGE)
-                                        .callback(
-                                            object : PermissionUtils.FullCallback {
-                                                override fun onGranted(granted: List<String?>) {
-
-                                                }
-
-                                                override fun onDenied(
-                                                    deniedForever: List<String?>,
-                                                    denied: List<String?>
-                                                ) {
-                                                    exitProcess(0)
-                                                }
-                                            }).request()
-                                },
-                                DialogInterface.OnClickListener { _, _ -> // 退出应用
-                                    exitProcess(0)
-                                })
+//                            com.leon.lfilepickerlibrary.utils.AlertDialogUtils.showDialog(
+//                                this@MainActivity,
+//                                "提示",
+//                                "请给您的应用授予权限，否则无法执行之后的操作！！！",
+//                                null,
+//                                DialogInterface.OnClickListener { _, _ -> // 重新请求
+//                                    PermissionUtils.permission(PermissionConstants.STORAGE)
+//                                        .callback(
+//                                            object : PermissionUtils.FullCallback {
+//                                                override fun onGranted(granted: List<String?>) {
+//
+//                                                }
+//
+//                                                override fun onDenied(
+//                                                    deniedForever: List<String?>,
+//                                                    denied: List<String?>
+//                                                ) {
+//                                                    exitProcess(0)
+//                                                }
+//                                            }).request()
+//                                },
+//                                DialogInterface.OnClickListener { _, _ -> // 退出应用
+//                                    exitProcess(0)
+//                                })
                         }
                     }).request()
             }

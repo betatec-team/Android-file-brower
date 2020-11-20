@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#184a6e</color>
+
     <color name="colorPrimaryDark">#457699</color>
     <color name="colorAccent">#2E648A</color>
 
@@ -19,7 +19,12 @@
     <color name="lfile_defaultColor">#92B4F4</color>
 
     <color name="line_color">#F1F1F1</color>
+
     <color name="colorBlackTransparent">#aa000000</color>
+
     <color name="colorWhite">#FFFFFF</color>
+
     <color name="btn_cancel_boarder">#525151</color>
+
+    <color name="colorPrimary">#184a6e</color>
 </resources>

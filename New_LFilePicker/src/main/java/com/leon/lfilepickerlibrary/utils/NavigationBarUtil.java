@@ -22,7 +22,8 @@ public class NavigationBarUtil {
     static public void hideNavigationBar(final Window window) {
         if (isShowNavigationBar(window))
             hideSystemUI(window);
-//        window.getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//        window.getDecorView().setOnSystemUiVisibilityChangeListener(new
+//        View.OnSystemUiVisibilityChangeListener() {
 //            @Override
 //            public void onSystemUiVisibilityChange(int visibility) {
 //                hideSystemUI(window);
@@ -33,7 +34,8 @@ public class NavigationBarUtil {
     static public void showNavigationBar(final Window window) {
         if (!isShowNavigationBar(window))
             showSystemUI(window);
-//        window.getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//        window.getDecorView().setOnSystemUiVisibilityChangeListener(new
+//        View.OnSystemUiVisibilityChangeListener() {
 //            @Override
 //            public void onSystemUiVisibilityChange(int visibility) {
 //                showSystemUI(window);
@@ -91,7 +93,8 @@ public class NavigationBarUtil {
     }
 
     static public boolean mt8735GetNavigationBarState(Context context) {
-        int status = Settings.System.getInt(context.getContentResolver(), "navigation_bar_switch", 0);
+        int status = Settings.System.getInt(context.getContentResolver(),
+                "navigation_bar_switch", 0);
         return status != 0;
     }
 
